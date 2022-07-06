@@ -10,8 +10,9 @@
 int main()
 {
     WordNetwork wordNetwork = WordNetwork("testWords.txt");
-    wordNetwork.printTree();
-    // wordNetwork.filterList("space", "22222", wordNetwork.wordList);
+    // wordNetwork.printWordList();
+    wordNetwork.filterList("space", "22200", wordNetwork.wordList);
+    wordNetwork.printWordList();
     // for (auto const & word : wordNetwork.wordList)
     // {
     //     std::cout << word << "\n";

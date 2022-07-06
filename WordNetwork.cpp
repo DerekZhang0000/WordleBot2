@@ -118,37 +118,45 @@ void WordNetwork::filterList(std::string const & word, std::string const & wordS
     std::unordered_map<char, unsigned char> presentLetters;
     for (unsigned char i = 0; i < 5; ++i) {
         char const letter = word.at(i);
-        char const letterState = wordState.at(1);
+        char const letterState = wordState.at(i);
 
         if (letterState != '0') {
             presentLetters[letter] += 1;
         }
+        else {
+            presentLetters[letter] = 0;
+        }
     }
-
     for (unsigned char i = 0; i < 5; ++i)
     {
         char const letter = word.at(i);
-        char const letterState = wordState.at(1);
+        char const letterState = wordState.at(i);
         auto presentLettersIt = presentLetters.find(letter);
 
         if (letterState == '0' &&
-            (presentLettersIt == presentLetters.end() ||
-             presentLettersIt->second == 0))
+            presentLettersIt->second == 0)
         {
             removeLetterNode(letter, wordList);
         }
         else if (letterState == '1' &&
-            (presentLettersIt != presentLetters.end() &&
-             presentLettersIt->second > 0))
+                 presentLettersIt->second > 0)
         {
             removeLetterIndexNode(letter, i, wordList);
             presentLettersIt->second -= 1;
         }
         else if (letterState == '2' &&
-            (presentLettersIt != presentLetters.end() &&
-             presentLettersIt->second > 0))
+                 presentLettersIt->second > 0)
         {
-            inverseRemoveLetterIndexNode(letter, i, wordList);
+            std::cout << "Inverse removing letter node " << letter << " " << (int)i << "\n";
+            for (auto word : wordList) {
+                try {
+                    if (word.size() != 0 && word.at(i) != letter) {
+                        std::cout << "Erasing " << word << "\n";
+                        wordList.erase(word.c_str());
+                    }
+                }
+                catch (...) {}
+            }
             presentLettersIt->second -= 1;
         }
     }
@@ -157,8 +165,8 @@ void WordNetwork::filterList(std::string const & word, std::string const & wordS
 // Removes all the words in the word list that contain the specified letter
 void WordNetwork::removeLetterNode(char const & letter, WordList & wordList)
 {
+    std::cout << "Removing letter node " << letter << "\n";
     auto const & letterNodeIt = letterIndexTree.find(letter);
-
     if (letterNodeIt == letterIndexTree.end()) { return; }
 
     for (unsigned char i = 0; i < 5; ++i) {
@@ -169,6 +177,7 @@ void WordNetwork::removeLetterNode(char const & letter, WordList & wordList)
 
         for (auto const & word : letterIndexList) {
             wordList.erase(word);
+            std::cout << "Removing " << word << "\n";
         }
     }
 }
@@ -176,6 +185,7 @@ void WordNetwork::removeLetterNode(char const & letter, WordList & wordList)
 // Removes all the words in the word list that have the specified letter at the specified index
 void WordNetwork::removeLetterIndexNode(char const & letter, unsigned char const & index, WordList & wordList)
 {
+    std::cout << "Removing letter index node " << letter << " " << (int)index << "\n";
     auto const & letterNodeIt = letterIndexTree.find(letter);
     if (letterNodeIt == letterIndexTree.end()) { return; }
 
@@ -186,14 +196,15 @@ void WordNetwork::removeLetterIndexNode(char const & letter, unsigned char const
 
     for (auto const & word : letterIndexList) {
         wordList.erase(word);
+        std::cout << "Removing " << word << "\n";
     }
 }
 
 // Removes all the words in the word list that do not have the specified letter at the specified index
 void WordNetwork::inverseRemoveLetterIndexNode(char const & letter, unsigned char const & index, WordList & wordList)
 {
+    std::cout << "Inverse removing letter index node " << letter << " " << (int)index << "\n";
     auto const & letterNodeIt = letterIndexTree.find(letter);
-
     if (letterNodeIt == letterIndexTree.end()) { return; }
 
     for (unsigned char i = 0; i < 5; ++i) {
@@ -205,6 +216,7 @@ void WordNetwork::inverseRemoveLetterIndexNode(char const & letter, unsigned cha
 
         for (auto const & word : letterIndexList) {
             wordList.erase(word);
+            std::cout << "Removing " << word << "\n";
         }
     }
 }
